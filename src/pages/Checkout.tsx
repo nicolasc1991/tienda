@@ -236,10 +236,10 @@ Observación: ${formData.observacion || 'N/A'}
             <h2 className="text-xl font-bold mb-4">
               DATOS PARA ENVÍOS
               <br />
-              <span className="text-sm font-normal">
+              {/* <span className="text-sm font-normal">
                 Todos los datos son importantes, completar todos en ese orden
                 por favor 🙏🏼
-              </span>
+              </span> */}
             </h2>
 
             <form
