@@ -1,30 +1,26 @@
 import React from 'react'
-import './App.css'
-import App from './App'
-import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
 import { createRoot } from 'react-dom/client'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { CartProvider } from './context/CartContext'
+import App from './App'
+import Home from './pages/Home'
+import Productos from './pages/Products'
+import Carrito from './pages/Checkout'
 
 createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route
-          path="/about"
-          element={
-            <>
-              <div className="text-center">
-                <h1 className="text-xl">About</h1>
-                <div>
-                  <Link to="/" className="text-purple-400 underline">
-                    Home
-                  </Link>
-                </div>
-              </div>
-            </>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+    <CartProvider>
+      {' '}
+      {/* Aquí envuelvo todo para que el contexto esté disponible */}
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route index element={<Home />} />
+            <Route path="productos" element={<Productos />} />
+            <Route path="carrito" element={<Carrito />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </CartProvider>
   </React.StrictMode>
 )

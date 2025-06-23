@@ -1,15 +1,18 @@
 {
-  "name": "vite-react-typescript-tailwind-starter",
-  "version": "0.0.0",
+  "name": "tienda",
+  "version": "1.0.0",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview --port 3000",
     "lint": "eslint . --ext .ts,.tsx,.js",
     "prepare": "husky install",
-    "test": "vitest"
+    "test": "vitest",
+    "preview": "vite preview"
   },
   "dependencies": {
+    "framer-motion": "^12.19.0",
+    "lucide-react": "^0.522.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
