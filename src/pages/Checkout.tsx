@@ -4,10 +4,8 @@ import { useCart } from '../context/CartContext'
 export default function Carrito() {
   const { cart, clearCart, updateQuantity, removeFromCart } = useCart()
 
-  // Estado para mostrar modal
   const [showModal, setShowModal] = useState(false)
 
-  // Estado para formulario de datos
   const [formData, setFormData] = useState({
     localidad: '',
     codigoPostal: '',
@@ -21,7 +19,6 @@ export default function Carrito() {
     observacion: ''
   })
 
-  // Agrupar productos por id+talle para sumar cantidades
   const productCountMap: Record<
     string,
     { product: (typeof cart)[number]['product']; count: number; talle: string }
@@ -56,14 +53,12 @@ export default function Carrito() {
     updateQuantity(productId, talle, newCantidad)
   }
 
-  // Actualiza campos del formulario
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  // Validar que todos los campos obligatorios estén completos (excepto observacion que puede quedar vacía)
   const isFormValid = () => {
     const {
       localidad,
@@ -84,7 +79,6 @@ export default function Carrito() {
     )
   }
 
-  // Función para confirmar pedido desde modal
   const handleEnviarPedido = () => {
     if (!isFormValid()) {
       alert('Por favor, completá todos los campos requeridos.')
@@ -136,7 +130,8 @@ Observación: ${formData.observacion || 'N/A'}
         <p className="text-center text-gray-600">El carrito está vacío.</p>
       ) : (
         <>
-          <table className="w-full border-collapse mb-6">
+          {/* Vista tipo tabla para escritorio */}
+          <table className="w-full border-collapse mb-6 hidden md:table">
             <thead>
               <tr className="border-b">
                 <th className="text-left py-2">Imagen</th>
@@ -198,49 +193,100 @@ Observación: ${formData.observacion || 'N/A'}
                 )
               })}
             </tbody>
-            <tfoot>
-              <tr className="font-bold border-t">
-                <td className="py-2 text-left" colSpan={4}>
-                  Total
-                </td>
-                <td className="py-2 text-right">
-                  ${total.toLocaleString('es-AR')}
-                </td>
-                <td></td>
-              </tr>
-            </tfoot>
           </table>
 
-          <div className="flex justify-between">
-            <button
-              onClick={clearCart}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
-            >
-              Vaciar carrito
-            </button>
+          {/* Vista de tarjetas para móvil */}
+          <div className="space-y-4 md:hidden mb-6">
+            {productosConCantidad.map(({ product, count, talle }) => {
+              const precio = product.precio ?? 0
+              return (
+                <div
+                  key={`${product.id}-${talle}`}
+                  className="border rounded p-4 shadow-sm flex flex-col gap-2"
+                >
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={product.imagenes[0]}
+                      alt={product.nombre}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                    <div>
+                      <p className="font-semibold">{product.nombre}</p>
+                      <p className="text-sm text-gray-600">Talle: {talle}</p>
+                    </div>
+                  </div>
 
-            <button
-              onClick={() => setShowModal(true)}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-            >
-              Confirmar pedido por WhatsApp
-            </button>
+                  <div className="flex items-center justify-between mt-2">
+                    <label className="text-sm">Cantidad:</label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={count}
+                      onChange={(e) =>
+                        handleCantidadChange(
+                          product.id.toString(),
+                          talle,
+                          Number(e.target.value)
+                        )
+                      }
+                      className="w-16 border rounded px-2 py-1 text-right"
+                    />
+                  </div>
+
+                  <div className="flex justify-between text-sm">
+                    <span>Precio:</span>
+                    <span>${precio.toLocaleString('es-AR')}</span>
+                  </div>
+                  <div className="flex justify-between text-sm font-bold">
+                    <span>Subtotal:</span>
+                    <span>${(precio * count).toLocaleString('es-AR')}</span>
+                  </div>
+
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() =>
+                        removeFromCart(product.id.toString(), talle)
+                      }
+                      className="text-red-600 hover:text-red-800 font-bold"
+                      title="Eliminar producto"
+                    >
+                      &times; Quitar
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Total y botones */}
+          <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center mb-6">
+            <div className="text-lg font-bold">
+              Total: ${total.toLocaleString('es-AR')}
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={clearCart}
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+              >
+                Vaciar carrito
+              </button>
+
+              <button
+                onClick={() => setShowModal(true)}
+                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+              >
+                Confirmar pedido por WhatsApp
+              </button>
+            </div>
           </div>
         </>
       )}
 
-      {/* Modal */}
+      {/* Modal de envío */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">
-              DATOS PARA ENVÍOS
-              <br />
-              {/* <span className="text-sm font-normal">
-                Todos los datos son importantes, completar todos en ese orden
-                por favor 🙏🏼
-              </span> */}
-            </h2>
+            <h2 className="text-xl font-bold mb-4">DATOS PARA ENVÍOS</h2>
 
             <form
               onSubmit={(e) => {
@@ -270,10 +316,7 @@ Observación: ${formData.observacion || 'N/A'}
                   name: 'telefonoPrincipal',
                   required: true
                 },
-                {
-                  label: 'Teléfono Alternativo',
-                  name: 'telefonoAlternativo'
-                }
+                { label: 'Teléfono Alternativo', name: 'telefonoAlternativo' }
               ].map(({ label, name, required }) => (
                 <div key={name}>
                   <label className="block font-semibold mb-1" htmlFor={name}>
