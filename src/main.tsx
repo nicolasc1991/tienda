@@ -12,7 +12,7 @@ createRoot(document.getElementById('root') as HTMLElement).render(
     <CartProvider>
       {' '}
       {/* Aquí envuelvo todo para que el contexto esté disponible */}
-      <BrowserRouter>
+      <BrowserRouter basename="/tienda">
         <Routes>
           <Route path="/" element={<App />}>
             <Route index element={<Home />} />
